@@ -1,0 +1,35 @@
+﻿
+@{
+    DateTime Date = DateTime.Now;
+    DateTime From = DateTime.Now;
+    DateTime To = DateTime.Now;
+    int PeopleNumber = 0;
+}
+
+<h1>Add</h1>
+
+<div>
+    <form method="post">
+
+        <p>Day: </p>
+        <input type="date" asp-for="@Date" />
+
+        <br />
+        <p>From: </p>
+        <input type="time" asp-for="@From" value="00:00"/>
+
+
+        <br />
+        <p>To:</p> 
+        <input type="time" asp-for="@To" value="00:00"/>
+
+
+        <br />
+        <p>Number of people: </p>
+        <input type="number" asp-for="@PeopleNumber" value="1" min="1" max="50"/>
+        <br />
+        <br />
+
+        <input type="submit" value="Book">
+    </form>
+</div>

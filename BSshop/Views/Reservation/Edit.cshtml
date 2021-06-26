@@ -1,0 +1,48 @@
+﻿@using BSshop.Models;
+
+@{
+    Reservation reservation = ViewBag.Reservation;
+
+    if (reservation == null)
+    {
+        reservation = new Reservation
+        {
+            Date = DateTime.Now,
+            From = DateTime.Now,
+            To = DateTime.Now,
+            PeopleNumber = 0,
+        };
+    }
+
+    DateTime Date = reservation.Date;
+    DateTime From = reservation.From;
+    DateTime To = reservation.To;
+    int PeopleNumber = reservation.PeopleNumber;  
+}
+
+<h1>Edit</h1>
+
+<div>
+    <form method="post">
+        <p>Day: </p>
+        <input type="date" asp-for="@Date" />
+
+        <br />
+        <p>From: </p>
+        <input type="time" asp-for="@From"/>
+
+
+        <br />
+        <p>To:</p> 
+        <input type="time" asp-for="@To"/>
+
+
+        <br />
+        <p>Number of people: </p>
+        <input type="number" asp-for="@PeopleNumber" min="1" max="50"/>
+        <br />
+        <br />
+        <input type="hidden" value="@reservation.Id" name="Id"/>
+        <input type="submit" value="Edit book">
+    </form>
+</div>

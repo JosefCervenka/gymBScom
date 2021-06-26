@@ -1,0 +1,95 @@
+﻿@using System.Collections.Generic;
+@using BSshop.Models;
+
+@{
+    List<Reservation> reservations = ViewBag.Reservations;
+
+    List<string> days = new List<string>()
+    {
+    "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"
+    };
+
+    string id = Url.Action();
+    try { id = id[^8..^0]; }
+    catch (Exception) { id = ""; }
+
+    DateTime dateTime;
+            if (id == "" || id == null) dateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            else try { dateTime = new DateTime(int.Parse(id[0..4]), int.Parse(id[4..6]), int.Parse(id[6..8])); }
+                catch (Exception) { dateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day); }
+
+
+    DateTime monday = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day).AddDays(-(int)dateTime.DayOfWeek +1);
+    DateTime sunday = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day).AddDays(-(int)dateTime.DayOfWeek + 7);
+
+    string previousMonday = monday.AddDays(-7).ToString();
+    string nextMonday = monday.AddDays(+7).ToString();
+
+    int day_ = monday.Day-1;
+
+    Guid resId = Guid.NewGuid();
+}
+
+<div class="switch">
+
+<a href="@("/Reservation/Index/" + previousMonday[6..10] + previousMonday[3..5] + previousMonday[0..2])"><i class="material-icons">chevron_left</i></a>
+<span>@(monday.ToString()[0..10]) - @(sunday.ToString()[0..10])</span>
+<a href="@("/Reservation/Index/" + nextMonday[6..10] + nextMonday[3..5] + nextMonday[0..2])"><i class="material-icons">chevron_right</i></a>
+</div>
+<div class="header"> 
+    @foreach(var day in days) 
+    {
+        <div class="collum-header">
+            @(day_ = day_ + 1). @day
+        </div>
+    }
+    <br />
+</div>
+
+
+<div class="schedule">
+    <div class="hours">
+            @for(int i = 1; i <= 23; i++)
+            {
+               <p style="top: @(60*i)px">@(i):00</p>
+            }
+    </div>
+    @foreach(var day in days)
+    {
+        <div class="collum">
+            @for(int i = 1; i <= 23; i++)
+            {
+                <div class="line" style="margin-top: @(i*60)px"></div>
+            }
+
+            @foreach(var reservation in reservations.Where(x=> x.Date.DayOfWeek.ToString() == day))
+            {
+                
+                <div class="reservation" style="margin-top:@(reservation.FromMinutes)px; height: @((reservation.ToMinutes-reservation.FromMinutes))px">
+                    <h5>Reservation</h5>
+                    <span>@(reservation.Date.Day).@(reservation.Date.Month) @(reservation.Date.Year)</span>
+                    <span>@(reservation.From.TimeOfDay.ToString()[0..5]) - @(reservation.To.TimeOfDay.ToString()[0..5])</span>
+
+                    <div style="display: flex" >
+                    <button class="action" onclick='document.getElementById("d@(reservation.Id)").submit()'>
+                    <i class="material-icons">delete</i> 
+                    </button>
+
+                    <a href="@("/Reservation/Edit/" + reservation.Id)">
+                    <div class="action" style="margin-top: -5px">
+                    <i class="material-icons">edit</i>
+                    </div>
+                    </a>
+                    </div>
+           
+
+                    <form method="post" id="d@(reservation.Id)">
+                        <input type="hidden" name="resId" value="@reservation.Id"/>
+                        <input type="hidden" name="id" value="@id"/>
+                        <input type="submit" value="Delete" style="display: none"/>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</div>
